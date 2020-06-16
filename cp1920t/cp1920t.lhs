@@ -977,11 +977,40 @@ dic_exp :: Dict -> [(String,[String])]
 dic_exp = collect . tar
 
 tar = cataExp g where
-  g = undefined --either nil discollect
+  g = (either t1 t)
 
-dic_rd = undefined
+t1 x = [("",x)]
 
-dic_in = undefined
+lltol :: [[a]] -> [a]
+lltol [] = []
+lltol (h:y) = h ++ lltol y
+
+t (o,l) = map(\(x,y) -> ((o++x),y)) (lltol l)
+
+dic_rd p = look2 p . dic_exp
+
+look2 :: Eq a => a -> [(a,b)] -> Maybe b
+look2 t = cataList (either (const Nothing) aux2) where
+   aux2 ((a,b),x) = if (t==a) then Just b else x
+
+--teste1 p s d
+  --    | dic_red p s d = dic_imp d == dic_in p s (dic_imp d)
+    --  | otherwise = True
+--teste1 p t = lookup p (dic_exp t)
+
+dic_in t s = undefined--dic_imp . add2 t s . dic_exp
+--teste2 t s = exist t s . dic_exp
+--teste1 p s = if (dic_rd p == Nothing) then dic_imp . add2 p s . dic_exp else id
+
+add2 :: a -> b -> [(a,b)] -> [(a,b)]
+add2 t s = cataList (either aux4 aux5) where
+  aux4 () = [(t,s)]
+  aux5 ((a,b),x) = (a,b):x
+
+exist :: (Eq a, Eq b) => a -> b -> [(a,b)] -> Bool
+exist p s = cataList (either aux6 aux3) where
+  aux6 () = False
+  aux3 ((a,b),x) = if(p == a && s == b) then True else x
 
 \end{code}
 
@@ -1108,6 +1137,19 @@ truchet1 = Pictures [ put (0,80) (Arc (-90) 0 40), put (80,0) (Arc 90 180 40) ]
 
 truchet2 = Pictures [ put (0,0) (Arc 0 90 40), put (80,80) (Arc 180 (-90) 40) ]
 
+imagem ((x,y),(_,_)) = Pictures [truchet1,truchet2]
+
+main :: IO ()
+main = do
+        truchet1 <- loadBMP "images/Truchet_inverse.bmp"
+        truchet2 <- loadBMP "images/Truchet.bmp"
+        simulate
+          janela
+          white
+          0
+          inicio
+          f
+
 --- janela para visualizar:
 
 janela = InWindow
@@ -1118,6 +1160,10 @@ janela = InWindow
 ----- defs auxiliares -------------
 
 put  = uncurry Translate
+
+----- execute ----
+
+--run = do { system "ghc cp1920t" ; system "./cp1920t" }
 
 -------------------------------------------------
 \end{code}
