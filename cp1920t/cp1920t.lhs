@@ -1032,52 +1032,38 @@ maisEsqAux (_, (e,_)) = e
 maisEsq = cataBTree g
   where g = either (const Nothing) maisEsqAux
 
--- insert' :: a -> (a, (Maybe b, Maybe b)) -> BTree t
--- insert' x (a, (Empty, Empty)) | x <= a = Node(a, (Node (x, (Empty, Empty)), Empty))
---                                      | x > a = Node(a, (Empty, Node(x, (Empty, Empty))))
--- insert' x Empty = Node (x (Empty, Empty))
--- insert' (x, (Node (a, (left, right))))
---     | x == a = Node (x, (left, right))
---     | x < a  = Node (a, ((insert' (x, left), right)))
---     | x > a  = Node (a, (left, (insert' (x, right))))
-
-aux3 :: Ord a => [a] -> Bool
-aux3 [] = True
-aux3 t | t == qSort(t) = True
-       | t /= qSort(t) = False
-
--- aux1 (h, (t1,t2)) = t1 ++ [h] ++ t2
---
--- aux2 (h, t) = (h, (t1, t2))
---     where
---       t1 = [ a | a <- x , a < h]
---       t2 = [ a | a <- x , a >= h]
---
--- insert' = aux2 . aux1
 
 insOrd' x = cataBTree g
-  where g = undefined
+  where g = either (const (Node(x, (Empty, Empty)), Empty)) insere where
+        insere (a, ((lt, lt2), (rt, rt2)))    | x < a = (Node(a, (lt, rt2)), Node(a, (lt2, rt2)))
+                                              | otherwise = (Node(a, (lt2, rt)), Node(a, (lt2, rt2)))
 
-insOrd a x = undefined
+insOrd x = p1 . insOrd' x
 
 isOrd' = cataBTree g
-  where g = undefined
+  where g = either (const (True, Empty)) ord where
+        ord (a, ((lb, Empty), (rb, Empty))) = (True, Node(a, (Empty, Empty)))
+        ord (a, ((lb, Empty), (rb, rt)))    | a > selecionaNo rt = (False, Node(a, (Empty, rt)))
+                                            | otherwise = (rb, Node(a, (Empty, rt)))
+        ord (a, ((lb, lt), (rb, Empty)))    | a < selecionaNo lt = (False, Node(a, (lt, Empty)))
+                                            | otherwise = (lb, Node(a, (lt, Empty)))
+        ord (a, ((lb, lt), (rb, rt)))       | a < selecionaNo lt || a > selecionaNo rt = (False, Node(a, (lt, rt)))
+                                            | otherwise = (lb && rb, Node(a, (lt, rt)))
 
--- ???????
-isOrd t = (aux3 . inordt) t
+selecionaNo (Node(a, (_, _))) = a
 
--- ???????
+isOrd = p1 . isOrd'
+
+rotater (h,(Empty, r)) = Node(h,(Empty, r))
 rotater (a, (Node(nr, (bt1, bt2)), bt)) = Node(nr, (bt1, Node(a, (bt2, bt))))
 
--- ???????
-rrot = cataBTree g
+rrot = g . outBTree
   where g = either (const Empty) rotater
 
--- ???????
+rotatel (h,(l, Empty)) = Node(h,(l, Empty))
 rotatel (a, (bt, Node(a1, (bt1, bt2)))) = Node(a1, (Node(a, (bt, bt1)), bt2))
 
--- ???????
-lrot = cataBTree g
+lrot = g . outBTree
   where g = either (const Empty) rotatel
 
 select (h, (Node (_, (btl, btr)))) | h == True = btl
@@ -1111,9 +1097,32 @@ cataBdt b = b . (recBdt (cataBdt b)) . outBdt
 
 anaBdt b = inBdt . (recBdt (anaBdt b)) . b
 
+\end{code}
+
+\begin{eqnarray*}
+\xymatrix@@C=2cm{
+    |Bdt A|
+&
+    |B (B, Bdt B)|
+      \ar[l]_-{in}
+\\
+    |A|
+           \ar[u]^-{|[(g)]|}
+           \ar[r]_-{|g|}
+&
+    |B (B, A)|
+           \ar[u]_{B (id, anaBdt)}
+}
+\end{eqnarray*}
+
+\begin{code}
+
 navLTree :: LTree a -> ([Bool] -> LTree a)
 navLTree = cataLTree g
-  where g = undefined
+  where g = either (flip (const Leaf)) k
+        k (l, r) [] = Fork(l [], r [])
+        k (l, r) (h : t) | h == True = l t
+                         | otherwise = r t
 \end{code}
 
 

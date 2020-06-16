@@ -300,7 +300,7 @@
 
 \begin{center}\large
 \begin{tabular}{ll}
-\textbf{Grupo} nr. & 99 (preencher)
+\textbf{Grupo} nr. & 106
 \\\hline
 a89520 & João Santos
 \\
@@ -1159,6 +1159,8 @@ Teste de redundância de um significado \ensuremath{\Varid{s}} para uma palavra 
 \\
 \>[B]{}\Varid{t1\char95 2\char95 nil}\mathrel{=}\Conid{Node}\;(\mathrm{2},(\Varid{emp}\;\mathrm{1},\Conid{Empty})){}\<[E]%
 \\
+\>[B]{}\Varid{t2\char95 1\char95 nil}\mathrel{=}\Conid{Node}\;(\mathrm{1},(\Varid{emp}\;\mathrm{2},\Conid{Empty})){}\<[E]%
+\\
 \>[B]{}\Varid{t'}\mathrel{=}\Conid{Node}\;(\mathrm{5},(\Varid{t1\char95 2\char95 nil},\Varid{t7\char95 10\char95 16})){}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{t0\char95 2\char95 1}\mathrel{=}\Conid{Node}\;(\mathrm{2},(\Varid{emp}\;\mathrm{0},\Varid{emp}\;\mathrm{3})){}\<[E]%
@@ -1372,10 +1374,14 @@ outras funções auxiliares que sejam necessárias.
 \begin{hscode}\SaveRestoreHook
 \column{B}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{3}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{4}{@{}>{\hspre}l<{\hspost}@{}}%
+\column{5}{@{}>{\hspre}l<{\hspost}@{}}%
 \column{E}{@{}>{\hspre}l<{\hspost}@{}}%
 \>[B]{}\Varid{discollect}\mathbin{::}(\Conid{Ord}\;\Varid{b},\Conid{Ord}\;\Varid{a})\Rightarrow [\mskip1.5mu (\Varid{b},[\mskip1.5mu \Varid{a}\mskip1.5mu])\mskip1.5mu]\to [\mskip1.5mu (\Varid{b},\Varid{a})\mskip1.5mu]{}\<[E]%
 \\
-\>[B]{}\Varid{discollect}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{discollect}\;[\mskip1.5mu \mskip1.5mu]\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{discollect}\;((\Varid{b},\Varid{x})\mathbin{:}\Varid{y})\mathrel{=}[\mskip1.5mu (\Varid{b},\Varid{a})\mid \Varid{a}\leftarrow \Varid{x}\mskip1.5mu]\plus \Varid{discollect}\;\Varid{y}{}\<[E]%
 \\[\blanklineskip]%
 \>[B]{}\Varid{dic\char95 exp}\mathbin{::}\Conid{Dict}\to [\mskip1.5mu (\Conid{String},[\mskip1.5mu \Conid{String}\mskip1.5mu])\mskip1.5mu]{}\<[E]%
 \\
@@ -1384,154 +1390,28 @@ outras funções auxiliares que sejam necessárias.
 \>[B]{}\Varid{tar}\mathrel{=}\Varid{cataExp}\;\Varid{g}\;\mathbf{where}{}\<[E]%
 \\
 \>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\Varid{g}\mathrel{=}\bot {}\<[E]%
+\>[3]{}\Varid{g}\mathrel{=}\alt{\Varid{t1}}{\Varid{t}}{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{dic\char95 rd}\mathrel{=}\bot {}\<[E]%
+\>[B]{}\Varid{t1}\;\Varid{x}\mathrel{=}[\mskip1.5mu (\text{\tt \char34 \char34},\Varid{x})\mskip1.5mu]{}\<[E]%
 \\[\blanklineskip]%
-\>[B]{}\Varid{dic\char95 in}\mathrel{=}\bot {}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
-
-\subsection*{Problema 2}
-
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{maisDir}\mathrel{=}\Varid{cataBTree}\;\Varid{g}{}\<[E]%
+\>[B]{}\Varid{lltol}\mathbin{::}[\mskip1.5mu [\mskip1.5mu \Varid{a}\mskip1.5mu]\mskip1.5mu]\to [\mskip1.5mu \Varid{a}\mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{lltol}\;[\mskip1.5mu \mskip1.5mu]\mathrel{=}[\mskip1.5mu \mskip1.5mu]{}\<[E]%
+\\
+\>[B]{}\Varid{lltol}\;(\Varid{h}\mathbin{:}\Varid{y})\mathrel{=}\Varid{h}\plus \Varid{lltol}\;\Varid{y}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{t}\;(\Varid{o},\Varid{l})\mathrel{=}\map \;(\lambda (\Varid{x},\Varid{y})\to ((\Varid{o}\plus \Varid{x}),\Varid{y}))\;(\Varid{lltol}\;\Varid{l}){}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{dic\char95 rd}\;\Varid{p}\mathrel{=}\Varid{look2}\;\Varid{p}\comp \Varid{dic\char95 exp}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\Varid{look2}\mathbin{::}\Conid{Eq}\;\Varid{a}\Rightarrow \Varid{a}\to [\mskip1.5mu (\Varid{a},\Varid{b})\mskip1.5mu]\to \Conid{Maybe}\;\Varid{b}{}\<[E]%
+\\
+\>[B]{}\Varid{look2}\;\Varid{t}\mathrel{=}\Varid{cataList}\;\alt{\underline{\Conid{Nothing}}}{\Varid{aux2}}\;\mathbf{where}{}\<[E]%
+\\
+\>[B]{}\hsindent{4}{}\<[4]%
+\>[4]{}\Varid{aux2}\;((\Varid{a},\Varid{b}),\Varid{x})\mathrel{=}\mathbf{if}\;(\Varid{t}\equiv \Varid{a})\;\mathbf{then}\;\Conid{Just}\;\Varid{b}\;\mathbf{else}\;\Varid{x}{}\<[E]%
+\\[\blanklineskip]%
+\>[B]{}\mbox{\onelinecomment teste1 p s d}{}\<[E]%
 \\
 \>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{maisEsq}\mathrel{=}\Varid{cataBTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{insOrd'}\;\Varid{x}\mathrel{=}\Varid{cataBTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{insOrd}\;\Varid{a}\;\Varid{x}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{isOrd'}\mathrel{=}\Varid{cataBTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{isOrd}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{rrot}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{lrot}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{splay}\;\Varid{l}\;\Varid{t}\mathrel{=}{}\<[14]%
-\>[14]{}\bot {}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
-
-\subsection*{Problema 3}
-
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{extLTree}\mathbin{::}\Conid{Bdt}\;\Varid{a}\to \mathsf{LTree}\;\Varid{a}{}\<[E]%
-\\
-\>[B]{}\Varid{extLTree}\mathrel{=}\Varid{cataBdt}\;\Varid{g}\;\mathbf{where}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{inBdt}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{outBdt}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{baseBdt}\mathrel{=}\bot {}\<[E]%
-\\
-\>[B]{}\Varid{recBdt}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{cataBdt}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{anaBdt}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{navLTree}\mathbin{::}\mathsf{LTree}\;\Varid{a}\to ([\mskip1.5mu \Conid{Bool}\mskip1.5mu]\to \mathsf{LTree}\;\Varid{a}){}\<[E]%
-\\
-\>[B]{}\Varid{navLTree}\mathrel{=}\Varid{cataLTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
-
-
-\subsection*{Problema 4}
-
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{3}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{bnavLTree}\mathrel{=}\Varid{cataLTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{pbnavLTree}\mathrel{=}\Varid{cataLTree}\;\Varid{g}{}\<[E]%
-\\
-\>[B]{}\hsindent{3}{}\<[3]%
-\>[3]{}\mathbf{where}\;\Varid{g}\mathrel{=}\bot {}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
-
-\subsection*{Problema 5}
-
-\begin{hscode}\SaveRestoreHook
-\column{B}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{6}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{14}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{31}{@{}>{\hspre}l<{\hspost}@{}}%
-\column{E}{@{}>{\hspre}l<{\hspost}@{}}%
-\>[B]{}\Varid{truchet1}\mathrel{=}\Conid{Pictures}\;[\mskip1.5mu \Varid{put}\;(\mathrm{0},\mathrm{80})\;(\Conid{Arc}\;(\mathbin{-}\mathrm{90})\;\mathrm{0}\;\mathrm{40}),\Varid{put}\;(\mathrm{80},\mathrm{0})\;(\Conid{Arc}\;\mathrm{90}\;\mathrm{180}\;\mathrm{40})\mskip1.5mu]{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{truchet2}\mathrel{=}\Conid{Pictures}\;[\mskip1.5mu \Varid{put}\;(\mathrm{0},\mathrm{0})\;(\Conid{Arc}\;\mathrm{0}\;\mathrm{90}\;\mathrm{40}),\Varid{put}\;(\mathrm{80},\mathrm{80})\;(\Conid{Arc}\;\mathrm{180}\;(\mathbin{-}\mathrm{90})\;\mathrm{40})\mskip1.5mu]{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\mbox{\onelinecomment  janela para visualizar:}{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{janela}\mathrel{=}\Conid{InWindow}\;{}\<[E]%
-\\
-\>[B]{}\hsindent{14}{}\<[14]%
-\>[14]{}\text{\tt \char34 Truchet\char34}\;{}\<[31]%
-\>[31]{}\mbox{\onelinecomment  window title}{}\<[E]%
-\\
-\>[B]{}\hsindent{14}{}\<[14]%
-\>[14]{}(\mathrm{800},\mathrm{800})\;{}\<[31]%
-\>[31]{}\mbox{\onelinecomment  window size}{}\<[E]%
-\\
-\>[B]{}\hsindent{14}{}\<[14]%
-\>[14]{}(\mathrm{100},\mathrm{100}){}\<[31]%
-\>[31]{}\mbox{\onelinecomment  window position}{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\mbox{\onelinecomment  defs auxiliares -------------}{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\Varid{put}{}\<[6]%
-\>[6]{}\mathrel{=}\uncurry{\Conid{Translate}}{}\<[E]%
-\\[\blanklineskip]%
-\>[B]{}\mbox{\onelinecomment }{}\<[E]%
-\ColumnHook
-\end{hscode}\resethooks
-
-%----------------- Fim do anexo com soluções dos alunos ------------------------%
-
-%----------------- Índice remissivo (exige makeindex) -------------------------%
-
-\printindex
-
-%----------------- Bibliografia (exige bibtex) --------------------------------%
-
-\bibliographystyle{plain}
-\bibliography{cp1920t}
-
-%----------------- Fim do documento -------------------------------------------%
-\end{document}
+\>[3]{}\mbox{\onelinecomment     
