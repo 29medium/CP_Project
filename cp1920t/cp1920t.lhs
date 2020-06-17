@@ -1025,6 +1025,34 @@ maisDirAux (_, (_, d)) = d
 maisDir = cataBTree g
   where g = either (const Nothing) maisDirAux
 
+\end{code}
+
+Para definir a função maisDir recorremos ao catamorfismo da BTree, onde partindo de uma BTree devolvemos o nodo mais à direita.
+
+
+\begin{eqnarray*}
+\xymatrix@@C=3cm{
+    |BTree A|
+            \ar[d]_-{|maisDir|}
+&
+    |1 + (A ><(BTree A ><BTree A))|
+            \ar[l]_-{|inBTree|}
+            \ar[d]^{|id + id >< maisDir >< maisDir)|}
+\\
+     |Maybe A|
+&
+     |1 + A >< (Maybe A >< Maybe A)|
+            \ar[l]^-{|g = [g1, g2]|}
+}
+\end{eqnarray*}
+
+O resultado final é do tipo Maybe, uma vez que a árvore pode ser Empty, logo não tem nodos, ou seja, teria de ser devolvido Nothing.
+Pelo diagrama podemos observar que o gene g do diagrama do catamorfismo recebe um tipo |1 + A >< (Maybe A >< Maybe A)| e devolve um Maybe A.
+
+Ora, o gene g tem de ser [g1, g2], onde g1 será (const Nothing), pois a árvore estará vazia, e g2 será uma função que devolve o nodo caso este não tenha uma sub-árvore à direita e devolve a sub-árvore direita caso ela exista. A esta função g2 demos o nome de maisDirAux.
+
+\begin{code}
+
 maisEsqAux :: (a, (Maybe a, Maybe a)) -> Maybe a
 maisEsqAux (x, (Nothing, _)) = Just x
 maisEsqAux (_, (e,_)) = e
@@ -1032,6 +1060,11 @@ maisEsqAux (_, (e,_)) = e
 maisEsq = cataBTree g
   where g = either (const Nothing) maisEsqAux
 
+\end{code}
+
+A função maisEsq tem o mesmo modo de funcionamento que a maisDir, contudo, ao invés de verificar a existência de uma sub-árvore à direita verifica a existência de uma sub-árvore à esquerda.
+
+\begin{code}
 
 insOrd' x = cataBTree g
   where g = either (const (Node(x, (Empty, Empty)), Empty)) insere where
@@ -1039,6 +1072,43 @@ insOrd' x = cataBTree g
                                               | otherwise = (Node(a, (lt2, rt)), Node(a, (lt2, rt2)))
 
 insOrd x = p1 . insOrd' x
+
+\end{code}
+
+A função insOrd foi definida através da composição das funções |p1| e insOrd'. A função insOrd' recebe uma Btree e um valor a adicionar a essa mesma BTree e devolve um par de BTree, onde a primeira BTree contém o elemento que se pretendia inserir na árvore e a segunda é a árvore original.
+
+\begin{eqnarray*}
+\xymatrix@@C=2.5cm{
+  |BTree A >< A|
+          \ar[d]_-{|insOrd' = cataBTree g|}
+&
+  |(1 + (A ><(BTree A ><BTree A))) >< A|
+          \ar[l]_-{|inBTree|}
+          \ar[d]^{|(id + id >< insOrd' >< insOrd') >< id|}
+\\
+   |BTree' A >< BTree A|
+&
+   |(1 + A >< ((BTree' A >< BTree A) >< (BTree' A >< Btree A))) >< A|
+          \ar[l]^-{|g = [g1, g2]|}
+}
+\end{eqnarray*}
+
+Como podemos observar pelo diagrama, para definir a função insOrd' temos de definir o gene g. Este gene será um |either g1 g2|, onde g1 será a inserção numa árvore vazia e g2 caso contrário.
+A função g2 irá selecionar a sub-árvore onde o elemento será inserido.
+O insOrd' devolve um par com a nova BTree e a original, este resultado é aproveitado pela função insOrd que selecionará a primeira através da função |p1|.
+
+
+\begin{eqnarray*}
+\xymatrix@@C=2.5cm{
+  |BTree A >< A|
+          \ar[d]_-{|insOrd = p1 . insOrd'|}
+\\
+   |BTree' A|
+}
+\end{eqnarray*}
+
+
+\begin{code}
 
 isOrd' = cataBTree g
   where g = either (const (True, Empty)) ord where
@@ -1054,6 +1124,39 @@ selecionaNo (Node(a, (_, _))) = a
 
 isOrd = p1 . isOrd'
 
+\end{code}
+
+A função isOrd processa-se da mesma forma que a função insOrd. É uma composição de da função |p1| com a função auxiliar isOrd'.
+
+\begin{eqnarray*}
+\xymatrix@@C=2.5cm{
+  |BTree A|
+          \ar[d]_-{|isOrd' = cataBTree g|}
+&
+  |1 + A ><(BTree A ><BTree A)|
+          \ar[l]_-{|inBTree|}
+          \ar[d]^{|id + id >< isOrd' >< isOrd'|}
+\\
+   |Bool >< BTree A|
+&
+   |1 + A >< ((Bool >< BTree A) >< (Bool >< Btree A))|
+          \ar[l]^-{|g = [g1, g2]|}
+}
+\end{eqnarray*}
+
+A função isOrd' devolve um par com um Bool e a árvore analizada. O gene g do catamorfismo usado para definir a função isOrd' é um |either g1 g2|, onde g1 devolve sempre o par (True, Empty) e g2 devolve o par com o Bool(resultado da comparação do nodo com o das sub-árvores) e a árvore.
+
+\begin{eqnarray*}
+\xymatrix@@C=2.5cm{
+  |Bool >< BTree A|
+          \ar[d]_-{|isOrd = p1 . isOrd'|}
+\\
+   |Bool|
+}
+\end{eqnarray*}
+
+\begin{code}
+
 rotater (h,(Empty, r)) = Node(h,(Empty, r))
 rotater (a, (Node(nr, (bt1, bt2)), bt)) = Node(nr, (bt1, Node(a, (bt2, bt))))
 
@@ -1066,8 +1169,12 @@ rotatel (a, (bt, Node(a1, (bt1, bt2)))) = Node(a1, (Node(a, (bt, bt1)), bt2))
 lrot = g . outBTree
   where g = either (const Empty) rotatel
 
-select (h, (Node (_, (btl, btr)))) | h == True = btl
-                                   | otherwise = btr
+\end{code}
+
+As funções lrot e rrot têm os mesmos princípios de funcionamento, aplicando uma função g após o outBTree. O outBTree é aplicado para ser possível efetuar apenas uma rotação, pois inicialmente tínhamos implementado um cataBTree que ao ser recursivo fazia mais do que uma rotação.
+A função g é um |either g1 g2|, onde g1 devolve a árvore vazia, pois esta não tem rotações possíveis, e g2(rotatel/rotater) aplicam uma rotação.
+
+\begin{code}
 
 splay l t = flip (cataBTree g)
   where g = either (\x -> const Empty) (curry k)
@@ -1077,15 +1184,50 @@ splay l t = flip (cataBTree g)
 
 \end{code}
 
+A função splay é definida por um |flip (cataBTree g)|, decidimos esta implementação para podermos utilizar um catamorfismo de BTree ao invés de um catamorfismo de listas.
+O gene g do catamorfismo é um |either g1 g2|, onde g1 é devolve uma função que devolve uma árvore vazia e g2 devolve uma árvore dependendo de uma lista de Bool.
+Para conseguirmos perceber o que realmente é pretendido com a função splay,
+devemos averiguar primeiro o tipo que ela apresenta. Assim, podemos concluir
+que o nosso objetivo final deve ser retornar uma função, que dada uma lista de
+Bool, nos devolve uma BTree. Ainda mais, devemos compreender que somos capazes
+de trabalhar com a versão curried desta função, isto é, trabalharemos a lista de
+Bool e a BTree como se fosse um par, permitindo assim saber qual o elemento à cabeça
+da lista de Bool, o que nos permite avançar conforme pede o enunciado. Se for True
+avança para a esquerda, se for False avança para a direita.
+
 \subsection*{Problema 3}
 
 \begin{code}
 
 convert (a, (lt1, lt2)) = Fork(lt1, lt2)
 
+Fork a, Fork (lt1, lt2)
+
 extLTree :: Bdt a -> LTree a
 extLTree = cataBdt g where
-  g = either Leaf convert
+  g = either Leaf (Fork . p2)
+
+\end{code}
+
+A função extLTree transforma uma Bdt numa LTree através de um catamorfismo de Bdt. O gene g do catamorfismo consiste num |either g1 g2|, onde g1 devolve uma Leaf e g2 é uma composição de Fork após |p2|, onde |p2| escolhe apenas as sub-árvpres e elimina o nodo.
+
+\begin{eqnarray*}
+\xymatrix@@C=3cm{
+    |Bdt A|
+            \ar[d]_-{|extLTree|}
+&
+    |A + (A >< Bdt A >< Bdt A)|
+            \ar[d]^-{|id + (extLTree >< extLTree)|}
+            \ar[l]_-{|inBdt|}
+\\
+     |LTree A|
+&
+     |A + A >< LTree A >< LTree A|
+           \ar[l]^{|g|}
+}
+\end{eqnarray*}
+
+\begin{code}
 
 inBdt = either Dec Query
 
@@ -1128,13 +1270,64 @@ navLTree = cataLTree g
                          | otherwise = r t
 \end{code}
 
+Analisando o tipo da função navLTree podemos concluir
+que o nosso objetivo final deve ser retornar uma função, que dada uma lista de
+Bool, nos devolve uma LTree. Ainda mais, devemos compreender que somos capazes
+de trabalhar com a versão uncurried desta função, isto é, trabalharemos a lista de
+Bool e a LTree como elementos separados e não um par, podendo assim saber qual o elemento à cabeça
+da lista de Bool, o que nos permite avançar conforme pede o enunciado. Para a esquerda se for True e para a direita se for False.
+Também poderíamos utilizar a versao curried tal como foi utlizada na função splay, trabalhando, assim, com um par constituído por uma lista de Bool e a LTree.
+
+\begin{eqnarray*}
+\xymatrix@@C=3cm{
+    |LTree A|
+            \ar[r]^-{|outBTree|}
+            \ar[d]_-{|navLTree|}
+&
+    |A + (LTree A >< LTree A)|
+            \ar[d]^-{|id + (navLTree >< navLTree)|}
+\\
+     |(LTree A ^ Bool*)|
+&
+     |A + (((LTree A) ^ Bool* >< ((LTree A) ^ Bool*)))|
+           \ar[l]_{|g|}
+}
+\end{eqnarray*}
 
 \subsection*{Problema 4}
 
 \begin{code}
 bnavLTree = cataLTree g
-  where g = undefined
+  where g = either (flip(const Leaf)) (curry k)
+        k ((l, r), Empty) = Fork(l Empty, r Empty)
+        k ((l, r), (Node(a, (Empty, r2))))    | a == True = l Empty
+                                              | otherwise = r r2
+        k ((l, r), (Node(a, (l2, Empty))))    | a == True = l l2
+                                              | otherwise = r Empty
 
+\end{code}
+
+De forma semelhante à função navLTree, a função bnavLTree deverá retornar uma função que devolve uma LTree. No entanto, esta função devolverá uma LTree a partir de uma BTree Bool e não a partir de uma lista de Bool.
+Nesta função(bnavLTree) podemos trabalhar com a versão curried da função, ou seja, trabalharemos com um par de (BTree Bool) e de LTree, tendo assim a possibilidade de aceder à raiz da BTree, podendo avançar à fase seguinte.
+Se a cabeça indicar o valor True andamos para a esquerda na LTree, mas se o valor for False andamos para a direita.
+
+\begin{eqnarray*}
+\xymatrix@@C=3cm{
+    |LTree A|
+            \ar[r]^-{|outBTree|}
+            \ar[d]_-{|bnavLTree|}
+&
+    |A + (LTree A >< LTree A)|
+            \ar[d]^-{|id + (bnavLTree >< bnavLTree)|}
+\\
+     |(LTree A ^ Bool*)|
+&
+     |A + (((LTree A) ^ (BTree Bool) >< ((LTree A) ^ (BTree Bool))))|
+           \ar[l]_{|g|}
+}
+\end{eqnarray*}
+
+\begin{code}
 
 pbnavLTree = cataLTree g
   where g = undefined
