@@ -1069,8 +1069,11 @@ lrot = g . outBTree
 select (h, (Node (_, (btl, btr)))) | h == True = btl
                                    | otherwise = btr
 
-splay l t = undefined -- cataBTree g
-  where g = undefined -- either id select
+splay l t = flip (cataBTree g)
+  where g = either (\x -> const Empty) (curry k)
+        k ((a, (l, r)), []) = Node(a, (l [], r []))
+        k ((a, (l, r)), (h : t)) | h == True = l t
+                                 | otherwise = r t
 
 \end{code}
 
@@ -1101,7 +1104,7 @@ anaBdt b = inBdt . (recBdt (anaBdt b)) . b
 
 \begin{eqnarray*}
 \xymatrix@@C=2cm{
-    |Bdt A|
+    |Bdt B|
 &
     |B (B, Bdt B)|
       \ar[l]_-{in}
