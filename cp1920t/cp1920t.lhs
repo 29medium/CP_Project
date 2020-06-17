@@ -1342,18 +1342,42 @@ truchet1 = Pictures [ put (0,80) (Arc (-90) 0 40), put (80,0) (Arc 90 180 40) ]
 
 truchet2 = Pictures [ put (0,0) (Arc 0 90 40), put (80,80) (Arc 180 (-90) 40) ]
 
-imagem ((x,y),(_,_)) = Pictures [truchet1,truchet2]
+imagem x = Pictures (desenha 10 x)
+
+linha = [1,2,1,2,1,2,1,2,1,2]
+
+type Estado = ([[Int]])
+
+inicio x= x
+
+desenha 0 _ = []
+desenha l (h:t) = (desenhaL l 10 h) ++ (desenha (l - 1) t)
+
+desenhaL l 0 t = []
+desenhaL l c (h:t) |(h == 1) = (put(c * 80 - 480,- l*80 + 400) truchet1) : desenhaL l (c - 1) t
+                   | otherwise = (put(c *80 - 480,- l*80 + 400) truchet2) : desenhaL l (c - 1) t
+
+next1 l = l
 
 main :: IO ()
 main = do
-        truchet1 <- loadBMP "images/Truchet_inverse.bmp"
-        truchet2 <- loadBMP "images/Truchet.bmp"
+        x1 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x2 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x3 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x4 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x5 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x6 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x7 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x8 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x9 <- permuta [1,2,1,2,1,2,1,2,1,2]
+        x10 <- permuta [1,2,1,2,1,2,1,2,1,2]
         simulate
           janela
           white
           0
-          inicio
-          f
+          (inicio [x1,x2,x3,x4,x5,x6,x7,x8,x9,x10])
+          imagem
+          f where f _ _ m = next1 m
 
 --- janela para visualizar:
 
