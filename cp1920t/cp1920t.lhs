@@ -970,8 +970,12 @@ outras funções auxiliares que sejam necessárias.
 \subsection*{Problema 1}
 \begin{code}
 discollect :: (Ord b, Ord a) => [(b, [a])] -> [(b, a)]
-discollect [] = []
-discollect ((b, x) : y) = [(b, a) | a <- x] ++ discollect y
+discollect = f .! id where
+  f (x,y) = [(x,b) | b <- y]
+
+\end{code}
+\\
+\begin{code}
 
 dic_exp :: Dict -> [(String,[String])]
 dic_exp = collect . tar
@@ -980,12 +984,14 @@ tar = cataExp g where
   g = (either t1 t)
 
 t1 x = [("",x)]
+t (o,l) = map(\(x,y) -> ((o++x),y)) (concat l)
 
-lltol :: [[a]] -> [a]
-lltol [] = []
-lltol (h:y) = h ++ lltol y
+\end{code}
 
-t (o,l) = map(\(x,y) -> ((o++x),y)) (lltol l)
+Para definir a função tar recorremos ao cataExp, onde partindo de uma lista com um par ("",string com um significado)
+vamos adicionando a letra que se encontra em cada nodo a todos os elementos da lista.
+
+\begin{code}
 
 dic_rd p = look2 p . dic_exp
 
@@ -993,26 +999,37 @@ look2 :: Eq a => a -> [(a,b)] -> Maybe b
 look2 t = cataList (either (const Nothing) aux2) where
    aux2 ((a,b),x) = if (t==a) then Just b else x
 
---teste1 p s d
-  --    | dic_red p s d = dic_imp d == dic_in p s (dic_imp d)
-    --  | otherwise = True
---teste1 p t = lookup p (dic_exp t)
+\end{code}
 
-dic_in t s = undefined--dic_imp . add2 t s . dic_exp
---teste2 t s = exist t s . dic_exp
---teste1 p s = if (dic_rd p == Nothing) then dic_imp . add2 p s . dic_exp else id
+Para definir a função dic-rd começamos pela transformação |Dict -> [(String,[String])]| e recorremos a um cataList
+para procurar o significado de uma palavra na lista.
+O resultado final da função look2 é um Maybe porque a palavra pode não existir na lista.
+O gene g tem de ser [g1, g2], onde g1 será (const Nothing) e g2 a funçao aux2 que devolve |Just b| caso b seja o significado da palavra procurada.
 
-add2 :: a -> b -> [(a,b)] -> [(a,b)]
+\begin{code}
+
+dic_in p s = dic_imp . aux6 . dic_exp where
+  aux6 l | not(exist p s l) = add2 p s l
+         | otherwise = l
+
+add2 :: String -> String -> [(String,[String])] -> [(String,[String])]
 add2 t s = cataList (either aux4 aux5) where
-  aux4 () = [(t,s)]
+  aux4 () = [(t,[s])]
   aux5 ((a,b),x) = (a,b):x
 
-exist :: (Eq a, Eq b) => a -> b -> [(a,b)] -> Bool
+exist :: String -> String -> [(String,[String])] -> Bool
 exist p s = cataList (either aux6 aux3) where
   aux6 () = False
-  aux3 ((a,b),x) = if(p == a && s == b) then True else x
+  aux3 ((a,b),x) = if(p == a && s == (concat b)) then True else x
 
 \end{code}
+
+Para definir a função dic-in começamos por exportar o dicionario para o tipo |[(String,[String])]| e da seguida a função
+aux6 verifica se a palavra e o significado da palavra a adicionar já existem,(função exist) através de um cataList, onde o gene g
+é [g1, g2], onde g1 será (False) e g2 será (True) caso encontre a palavra e o significado dados.
+Caso não exista recorre a um cataList, para adicionar a palavra e significado, sendo o gene g [g1,g2] em que g1 é [(palavra,[significado])]
+e g2 simplesmente adiciona à lista ((a,b),x) = (a,b):x.
+Por fim, usamos a função dic-imp para importar a lista para o tipo Dict.
 
 \subsection*{Problema 2}
 
@@ -1176,7 +1193,7 @@ A função g é um |either g1 g2|, onde g1 devolve a árvore vazia, pois esta n�
 
 \begin{code}
 
-splay l t = flip (cataBTree g)
+splay = flip (cataBTree g)
   where g = either (\x -> const Empty) (curry k)
         k ((a, (l, r)), []) = Node(a, (l [], r []))
         k ((a, (l, r)), (h : t)) | h == True = l t
@@ -1198,10 +1215,6 @@ avança para a esquerda, se for False avança para a direita.
 \subsection*{Problema 3}
 
 \begin{code}
-
-convert (a, (lt1, lt2)) = Fork(lt1, lt2)
-
-Fork a, Fork (lt1, lt2)
 
 extLTree :: Bdt a -> LTree a
 extLTree = cataBdt g where
@@ -1335,6 +1348,10 @@ pbnavLTree = cataLTree g
 \end{code}
 
 \subsection*{Problema 5}
+
+O problema 5 foi resolvido recorendo a uma estrutura estado que guarda 10 listas de 10 elemento,
+podem sem 1(imagem) ou 2(imagem invertida) e usa a função permuta para alterar a ordem de cada lista.
+A partir daqui a função desenha cria uma lista de imgens posicionadas de acordo com a linha e coluna.
 
 \begin{code}
 

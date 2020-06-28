@@ -12,17 +12,18 @@
       \subsubitem BTree.hs, \hyperpage{3}
   \item Combinador ``pointfree''
     \subitem \emph  {cata}, \hyperpage{11}
-    \subitem \emph  {either}, \hyperpage{12}
+    \subitem \emph  {either}, \hyperpage{12}, \hyperpage{14--17}
 
   \indexspace
 
   \item Fun\IeC {\c c}\IeC {\~a}o
-    \subitem $\pi _1$, \hyperpage{11}
-    \subitem $\pi _2$, \hyperpage{11, 12}
+    \subitem $\pi _1$, \hyperpage{11}, \hyperpage{15, 16}
+    \subitem $\pi _2$, \hyperpage{11, 12}, \hyperpage{16, 17}
     \subitem \emph  {length}, \hyperpage{7}, \hyperpage{12}
-    \subitem \emph  {map}, \hyperpage{11}
-    \subitem \emph  {uncurry}, \hyperpage{12}, \hyperpage{14}
-  \item Functor, \hyperpage{4}, \hyperpage{6--9}, \hyperpage{12, 13}
+    \subitem \emph  {map}, \hyperpage{11}, \hyperpage{14}
+    \subitem \emph  {uncurry}, \hyperpage{12}, \hyperpage{19}
+  \item Functor, \hyperpage{4}, \hyperpage{6--9}, \hyperpage{12--16}, 
+		\hyperpage{18}
 
   \indexspace
 
